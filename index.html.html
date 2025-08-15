@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>darazazadisale.com — Flash Sale</title>
+<meta name="theme-color" content="#b3002d" />
+<style>
+  :root{--bg:#060012;--text:#fff}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family: Georgia, "Times New Roman", serif;background:linear-gradient(180deg,#0b0014,#070012);color:var(--text);-webkit-font-smoothing:antialiased}
+  /* Loader overlay */
+  #loaderOverlay{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,#ff6f00,#ff4500);z-index:1200;color:#fff}
+  .loader-card{width:min(760px,94vw);padding:28px;border-radius:14px;text-align:center;background:rgba(0,0,0,0.08);box-shadow:0 30px 80px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06)}
+  .brand{font-weight:900;color:#fff;font-size:28px;letter-spacing:.6px;text-transform:lowercase}
+  .sub{opacity:.95;margin-top:8px}
+  .progress{width:100%;height:12px;background:rgba(255,255,255,0.12);border-radius:999px;margin-top:18px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#ffd166,#ff7ab3);box-shadow:0 10px 30px rgba(255,150,100,0.18);transition:width 2.5s linear}
+  .loader-cta{margin-top:18px}
+  .btn{padding:12px 18px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+  .btn.primary{background:#fff;color:#b3002d}
+  .loader-note{font-size:13px;opacity:.9;margin-top:10px}
+  /* Main surprise layout */
+  .wrap{min-height:100vh;display:grid;place-items:center;padding:18px;visibility:hidden}
+  .stage{width:min(1100px,96vw);max-width:1200px;position:relative;padding:18px;border-radius:12px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .brand-small{font-weight:900;color:#ffdede;font-size:18px}
+  .board{display:grid;grid-template-columns:1fr 360px;gap:18px}
+  .nav{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
+  .nav button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  .heart-card{width:100%;height:480px;position:relative;display:grid;place-items:center}
+  .heart-svg{width:100%;height:100%}
+  .card-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72%;text-align:center;padding:22px;border-radius:14px;color:#100512;background:rgba(255,255,255,0.96)}
+  .card-title{font-size:28px;font-weight:800;margin-bottom:6px;color:#b3002d}
+  .card-body{font-size:17px;line-height:1.7;white-space:pre-wrap;color:#120312}
+  .signature{font-family:"Brush Script MT","Segoe Script",cursive;font-size:22px;color:#b3002d;display:block;margin-top:10px}
+  .controls{display:flex;gap:8px;justify-content:center;margin-top:12px}
+  .btn.small{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn.play{background:linear-gradient(90deg,#ffd166,#ff7ab3);color:#000}
+  .right-panel{padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);height:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .cake-area{width:100%;height:360px;border-radius:12px;background:linear-gradient(180deg,#12041a,#0b0210);display:grid;place-items:center;border:1px dashed rgba(255,255,255,0.06);position:relative;overflow:hidden}
+  .balloon{position:absolute;width:40px;height:60px;opacity:0.98;will-change:transform}
+  .balloon::after{content:'';position:absolute;left:50%;top:100%;width:2px;height:40px;background:#fff;transform:translateX(-50%);opacity:.7}
+  .floater{position:fixed;pointer-events:none;z-index:999;will-change:transform,opacity;opacity:0}
+  .floater img{width:100%;height:100%;display:block}
+  .audio-controls{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px}
+  .small-note{font-size:13px;opacity:.9;text-align:center}
+  @media (max-width:980px){ .board{grid-template-columns:1fr} .cake-area{height:220px} .heart-card{height:60vh} }
+</style>
+</head>
+<body>
+
+<!-- Loader overlay (prank) -->
+<div id="loaderOverlay" role="dialog" aria-modal="true">
+  <div class="loader-card" id="loaderCard">
+    <div class="brand">darazazadisale.com</div>
+    <div class="sub">Flash Sale • Exclusive Deals</div>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="bar" id="loaderBar"></div></div>
+    <div class="loader-cta">
+      <button class="btn primary" id="continueBtn">Tap to continue</button>
+    </div>
+    <div class="loader-note">Verifying device & fetching deals…</div>
+  </div>
+</div>
+
+<!-- Main surprise content -->
+<div class="wrap" id="mainWrap" aria-hidden="true">
+  <div class="stage" id="stage">
+    <div class="topbar">
+      <div class="brand-small">A Special Birthday for Safa</div>
+      <div class="audio-controls">
+        <button class="btn small play" id="playBtn">Play Music ▶</button>
+        <button class="btn small" id="pauseBtn" style="display:none">Pause ⏸</button>
+      </div>
+    </div>
+
+    <div class="board" role="main">
+      <div>
+        <div class="nav" role="tablist" aria-label="Cards navigation">
+          <button onclick="showCard(1)">1</button>
+          <button onclick="showCard(2)">2</button>
+          <button onclick="showCard(3)">3</button>
+          <button onclick="showCard(4)">4</button>
+          <button onclick="showCard(5)">5</button>
+          <button onclick="showCard(6)">6</button>
+          <button onclick="showCard(7)">Hug</button>
+        </div>
+
+        <!-- Cards simplified but emotional; red-ish theme -->
+        <div class="heart-card" id="card1" role="region" aria-label="Card 1">
+          <svg class="heart-svg" viewBox="0 0 600 520" aria-hidden="true">
+            <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffb6c1"/><stop offset="1" stop-color="#b3002d"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g1)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text" id="text1">
+            <div class="card-title">Happy Birthday, my Safa — my everything</div>
+            <div class="card-body">Aaj tumhara din hai — Meri khwahish yeh hai ke Allah tumhe sehat aur khushi jese phool de. 🤲💖
+
+You make simple mornings feel like festivals; your smile is my peace. May every dream of yours come true. Ameen. 🌟🤍
+
+I promise to hold you through every storm, and laugh with you on sunny days. 💞🌈</div>
+            <span class="signature">— Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card2" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#ffc9d9"/><stop offset="1" stop-color="#ff6f91"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g2)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Prayers, Roses & Little Charms</div>
+            <div class="card-body">Meri har dua mein tumhara naam hai — May Allah tumhe hamesha khush rakhe. 🤲🌸
+
+Pick-up line: If kisses were stars, I'd give you the whole sky. 😘🌌
+
+Little jokes: You stole my fries — I stole your heart back. 🍟💘</div>
+            <span class="signature">— Always, Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card3" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#ffefb8"/><stop offset="1" stop-color="#ffb3a7"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g3)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Our Journey — Sweet Memories</div>
+            <div class="card-body">Siri’s snowfall, horse rides, and our endless jokes — those nights taught me what home is. ❄️🐴
+
+In 4 years we'll be stronger; in 5 years we'll have a lifetime of tiny adventures. Sunflowers for our growth. 🌻🤍
+
+Thank you for being patient in fights, and for making up with the sweetest hugs. 🤗💛</div>
+            <span class="signature">— Forever, Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card4" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#ffe6f2"/><stop offset="1" stop-color="#ffc0d9"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g4)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Promises & Funny Lines</div>
+            <div class="card-body">You borrow my hoodies and return with your smile — best trade ever. 🧥😊
+
+Reminder: Don't forget to eat, sleep, and laugh — and if you're angry, I'll bring samosas. 😋🔥
+
+I promise to apologize first after fights and to always hold your hand. 🤝💖</div>
+            <span class="signature">— Your silly one, Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card5" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g5" x1="0" x2="1"><stop offset="0" stop-color="#fff0f0"/><stop offset="1" stop-color="#ffdede"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g5)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Gratitude & Duas</div>
+            <div class="card-body">Har din mein shukar karta hoon ke tum meri zindagi mein ho. May Allah give you health, success, and peace. Ameen. 🤲🌺
+
+I wish for patience in our fights, comfort in our sorrows, and doubling of our joys. May every step be blessed. ✨🙏
+
+You are seen, loved, and cherished beyond words. ❤️</div>
+            <span class="signature">— In every prayer, Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card6" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g6" x1="0" x2="1"><stop offset="0" stop-color="#fff0d6"/><stop offset="1" stop-color="#ffd166"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g6)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Cake & Celebration — Almost There!</div>
+            <div class="card-body">Let's cake, do gather, cut your cake — make a wish and let's celebrate together. 🎂🕯️
+
+Balloons, roses, and hearts — all floating for you on this day. 🌹🎈
+
+I promise to be the one beside you, in laughter and in silence. 💞</div>
+            <span class="signature">— With a heart, Usama</span>
+          </div>
+        </div>
+
+        <div class="heart-card" id="card7" style="display:none">
+          <svg class="heart-svg" viewBox="0 0 600 520">
+            <defs><linearGradient id="g7" x1="0" x2="1"><stop offset="0" stop-color="#ff9bb0"/><stop offset="1" stop-color="#b3002d"/></linearGradient></defs>
+            <path d="M300 480 L270 450 C120 340 60 260 60 180 C60 110 120 60 190 80 C230 92 260 128 300 170 C340 128 370 92 410 80 C480 60 540 110 540 180 C540 260 480 340 330 450 L300 480 Z" fill="url(#g7)" stroke="#ffffff44" stroke-width="2"/>
+          </svg>
+          <div class="card-text">
+            <div class="card-title">Come close, my love. Let's hug. 🤗</div>
+            <div class="card-sub">This is my special hug for you on your special day.</div>
+            <div class="card-body">Come close, my love. Let's hug each other — feel my arms around you, even if it's virtual. 💞🤗
+
+This is my special hug for you on your special day. Virtual hug between Osama and Safa. 👨‍❤️‍👩💫
+
+May this hug carry all my duas, my warmth, and my promise to be with you always. Ameen. 🤲🌹</div>
+            <div style="display:flex;gap:12px;justify-content:center;margin-top:12px">
+              <div style="width:78px;height:78px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:38px;border:6px solid #fff">👨</div>
+              <div style="width:78px;height:78px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:38px;border:6px solid #fff">👩</div>
+            </div>
+            <span class="signature">— Hugging you, Usama</span>
+          </div>
+        </div>
+
+        <div class="controls" role="navigation" aria-label="Card controls">
+          <button class="btn small" onclick="prevCard()">Prev</button>
+          <button class="btn small primary" onclick="nextCard()">Next</button>
+          <button class="btn small" id="downloadBtn">Download</button>
+        </div>
+
+      </div>
+
+      <!-- Right panel: animated cake, balloons, candles -->
+      <div class="right-panel" aria-hidden="false">
+        <div class="cake-area" id="cakeArea" aria-hidden="false">
+          <div id="cakeSVG" style="width:90%;height:90%"></div>
+          <div id="balloons" style="position:absolute;inset:0;pointer-events:none"></div>
+        </div>
+
+        <div class="small-note">Soft background music will play across all cards after you tap Play. Tap anywhere to spawn floaters.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floaters container -->
+<div id="floaters"></div>
+
+<script>
+// Loader logic: progress + auto transition to surprise
+const loaderBar = document.getElementById('loaderBar');
+const loaderOverlay = document.getElementById('loaderOverlay');
+const continueBtn = document.getElementById('continueBtn');
+const mainWrap = document.getElementById('mainWrap');
+
+function startLoaderAuto(){
+  loaderBar.style.width = '100%';
+  // after 5.2s show surprise
+  setTimeout(()=> revealSurprise(), 5200);
+}
+continueBtn.addEventListener('click', ()=> revealSurprise());
+
+function revealSurprise(){
+  // hide loader overlay with fade
+  loaderOverlay.style.transition = 'opacity .6s ease';
+  loaderOverlay.style.opacity = '0';
+  setTimeout(()=> loaderOverlay.style.display = 'none', 650);
+  mainWrap.style.visibility = 'visible';
+  mainWrap.setAttribute('aria-hidden','false');
+  // show first card and start ambient
+  showCard(1);
+  playMelody();
+  // small initial storm
+  storm(['heart','rose','butter'], 28);
+}
+
+// Card navigation
+const total = 7; let current = 1;
+function showCard(n){
+  if(n<1) n=1; if(n>total) n=total;
+  for(let i=1;i<=total;i++){
+    const el = document.getElementById('card'+i);
+    if(!el) continue;
+    el.style.display = (i===n)?'block':'none';
+  }
+  current=n;
+  // trigger effects per card
+  if(n===6) triggerCakeFloat();
+  if(n===7){ triggerCakeFloat(true); miniFireworks(); }
+  // spawn themed floaters
+  const mapping = {1:['heart','rose','teddy'],2:['rose','butter','heart'],3:['sun','heart','monkey'],4:['heart','butter','rose'],5:['rose','heart','sun'],6:['heart','teddy','rose','butter'],7:['heart','rose','butter','teddy']};
+  const types = mapping[n] || ['heart','rose'];
+  storm(types, 30);
+}
+function nextCard(){ showCard(Math.min(total,current+1)); }
+function prevCard(){ showCard(Math.max(1,current-1)); }
+
+// Floaters as small SVG data URIs
+const assets = {
+  heart: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"140\" height=\"140\"><path d=\"M70 126s-63-40-63-84a35 35 0 0163-14 35 35 0 0163 14c0 44-63 84-63 84z\" fill=\"%23b3002d\"/></svg>',
+  rose: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"110\" height=\"110\"><circle cx=\"55\" cy=\"40\" r=\"28\" fill=\"%23d7263d\"/><rect x=\"53\" y=\"68\" width=\"4\" height=\"32\" fill=\"%231e8b57\"/></svg>',
+  teddy: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"120\" height=\"120\"><circle cx=\"36\" cy=\"34\" r=\"12\" fill=\"%23c58b6b\"/><circle cx=\"84\" cy=\"34\" r=\"12\" fill=\"%23c58b6b\"/><circle cx=\"60\" cy=\"70\" r=\"28\" fill=\"%23ba7a56\"/></svg>',
+  butter: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"96\" height=\"64\"><ellipse rx=\"22\" ry=\"12\" cx=\"30\" cy=\"32\" fill=\"%23ffb6d5\"/><ellipse rx=\"22\" ry=\"12\" cx=\"66\" cy=\"32\" fill=\"%23ffd1a9\"/></svg>',
+  monkey: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"110\" height=\"110\"><circle cx=\"36\" cy=\"36\" r=\"18\" fill=\"%238d5a44\"/><circle cx=\"74\" cy=\"36\" r=\"18\" fill=\"%238d5a44\"/><circle cx=\"55\" cy=\"72\" r=\"36\" fill=\"%237a4b38\"/></svg>',
+  sun: 'data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"90\" height=\"90\"><circle cx=\"45\" cy=\"45\" r=\"16\" fill=\"%23ffcc33\"/></svg>'
+};
+
+function spawn(type, left){
+  const f = document.createElement('div'); f.className='floater';
+  const size = 28 + Math.random()*60;
+  f.style.width = size+'px'; f.style.height = size+'px';
+  f.style.left = (left ?? (Math.random()*(window.innerWidth-120))) + 'px';
+  f.style.top = (window.innerHeight + 20) + 'px';
+  const img = document.createElement('img'); img.src = assets[type] || assets.heart; img.alt = type;
+  f.appendChild(img); document.body.appendChild(f);
+  const duration = 3000 + Math.random()*4000;
+  const dx = (Math.random()-0.5) * 260;
+  requestAnimationFrame(()=>{ f.style.transition = `transform ${duration}ms linear, opacity ${duration}ms linear`; f.style.transform = `translate(${dx}px, -${window.innerHeight - 120}px) rotate(${(Math.random()-0.5)*720}deg)`; f.style.opacity = '0.98'; });
+  setTimeout(()=> f.remove(), duration+120);
+}
+
+function storm(types, count){
+  for(let i=0;i<count;i++){
+    setTimeout(()=> spawn(types[Math.floor(Math.random()*types.length)]), i*80 + Math.random()*200);
+  }
+}
+
+// Cake + balloons
+const cakeSVG = document.getElementById('cakeSVG');
+const balloonsContainer = document.getElementById('balloons');
+function createCake(){ cakeSVG.innerHTML = `
+  <svg viewBox="0 0 420 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated cake">
+    <defs><linearGradient id="cakeGrad" x1="0" x2="1"><stop offset="0" stop-color="#ffd1e6"/><stop offset="1" stop-color="#ff8db8"/></linearGradient></defs>
+    <rect x="90" y="140" width="240" height="110" rx="20" fill="#fff" stroke="#ffafc9" stroke-width="2"/>
+    <rect x="110" y="110" width="200" height="40" rx="16" fill="url(#cakeGrad)"/>
+    <g id="candles">
+      <rect x="150" y="86" width="8" height="28" rx="2" fill="#ffe066"/><rect x="190" y="86" width="8" height="28" rx="2" fill="#ffe066"/><rect x="230" y="86" width="8" height="28" rx="2" fill="#ffe066"/>
+      <g fill="#ffd166"><circle cx="154" cy="82" r="4"/><circle cx="194" cy="82" r="4"/><circle cx="234" cy="82" r="4"/></g>
+    </g>
+    <text x="210" y="200" font-family="Georgia" font-size="20" fill="#b3002d" text-anchor="middle">Happy Birthday, Safa!</text>
+  </svg>
+`; }
+function spawnBalloon(color, left){
+  const b = document.createElement('div'); b.className='balloon';
+  b.style.left = (left ?? (40 + Math.random()*260)) + 'px';
+  b.style.bottom = '-80px'; b.style.width = '40px'; b.style.height = '60px'; b.style.opacity = '0.98';
+  b.innerHTML = `<svg viewBox="0 0 40 60" width="40" height="60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="18" rx="16" ry="20" fill="${color}" /><line x1="20" y1="36" x2="20" y2="56" stroke="#fff" stroke-width="1"/></svg>`;
+  balloonsContainer.appendChild(b);
+  const dur = 6000 + Math.random()*4000; const dx = (Math.random()-0.5)*120;
+  b.animate([{transform:'translateY(0px)'},{transform:`translateY(-${320 + Math.random()*200}px) translateX(${dx}px)`}], {duration: dur, easing:'linear'});
+  setTimeout(()=> b.remove(), dur+200);
+}
+function triggerCakeFloat(final=false){
+  createCake();
+  const count = final ? 12 : 6;
+  for(let i=0;i<count;i++) setTimeout(()=> spawnBalloon(['#ff7ab3','#ffd166','#9b5de5','#00f5d4'][Math.floor(Math.random()*4)], 40 + Math.random()*260), i*300);
+}
+
+// Simple fireworks
+function miniFireworks(){
+  const c = document.createElement('canvas'); c.width = innerWidth; c.height = innerHeight; c.style.position='fixed'; c.style.left='0'; c.style.top='0'; c.style.pointerEvents='none'; document.body.appendChild(c);
+  const ctx = c.getContext('2d'); let parts = [];
+  function burst(x,y){ for(let i=0;i<60;i++) parts.push({x,y,vx:(Math.random()*2-1)*4, vy:(Math.random()*2-1)*4, life:80}); }
+  const timer = setInterval(()=> burst(Math.random()*innerWidth, Math.random()*innerHeight*0.4), 500);
+  function draw(){ ctx.clearRect(0,0,c.width,c.height); parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy += 0.03; p.life--; ctx.globalAlpha = Math.max(p.life/80,0); ctx.fillStyle = ['#ffd166','#ff7ab3','#b3002d','#00f5d4'][Math.floor(Math.random()*4)]; ctx.fillRect(p.x,p.y,3,3); }); parts = parts.filter(p=>p.life>0); requestAnimationFrame(draw); } draw();
+  setTimeout(()=> clearInterval(timer), 8000);
+}
+
+// Background music via WebAudio (gentle melody loop)
+let audioCtx, isPlaying=false, masterGain;
+function playMelody(){
+  if(isPlaying) return;
+  audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+  masterGain = masterGain || audioCtx.createGain(); masterGain.gain.value = 0.08; masterGain.connect(audioCtx.destination);
+  const ctx = audioCtx; const base = 261.63; const seq = [0,3,5,7,5,3,0];
+  const t0 = ctx.currentTime + 0.05;
+  for(let i=0;i<seq.length;i++){
+    const o = ctx.createOscillator(); const g = ctx.createGain(); o.type='sine';
+    o.frequency.value = base * Math.pow(2, seq[i]/12);
+    g.gain.setValueAtTime(0.0001, t0 + i*0.6); g.gain.linearRampToValueAtTime(0.12, t0 + i*0.6 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + (i+1)*0.6);
+    o.connect(g).connect(masterGain); o.start(t0 + i*0.6); o.stop(t0 + (i+1)*0.6 + 0.02);
+  }
+  // background pad
+  const pad = ctx.createOscillator(); const padG = ctx.createGain(); pad.type='sine';
+  pad.frequency.value = base/2; padG.gain.value = 0.02; pad.connect(padG).connect(masterGain); pad.start(t0); pad.stop(t0 + 8);
+  isPlaying=true;
+  document.getElementById('playBtn').style.display='none'; document.getElementById('pauseBtn').style.display='inline-block';
+}
+function pauseMelody(){
+  if(!audioCtx) return;
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  document.getElementById('playBtn').style.display='inline-block'; document.getElementById('pauseBtn').style.display='none';
+  isPlaying=false;
+}
+
+// Try to resume audio on user gesture
+document.getElementById('playBtn').addEventListener('click', ()=> { if(audioCtx && audioCtx.state !== 'running') audioCtx.resume(); playMelody(); });
+document.getElementById('pauseBtn').addEventListener('click', ()=> { pauseMelody(); });
+
+// spawn on click and resume audio
+window.addEventListener('click', (e)=> { const types = Object.keys(assets); spawn(types[Math.floor(Math.random()*types.length)], e.clientX - 20); if(audioCtx && audioCtx.state!=='running') audioCtx.resume(); playMelody(); });
+
+// Download button for the single file (creates a blob)
+document.getElementById('downloadBtn').addEventListener('click', ()=> {
+  const html = '<!doctype html>\\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'darazazadisale_surprise.html'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 1500);
+});
+
+// Initialize loader progress bar and start auto after short delay
+setTimeout(()=> startLoaderAuto(), 140);
+createCake();
+
+</script>
+</body>
+</html>
